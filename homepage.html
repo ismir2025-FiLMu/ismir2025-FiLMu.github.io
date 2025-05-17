@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FiLMu Demo</title>
+  <style>
+    audio {
+      width: 25%;
+      height: 100px; /* 可调整：30~60px 都行 */
+    }
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      padding: 40px;
+      background-color: #f9f9f9;
+    }
+
+    h1 {
+      font-size: 68px;
+      text-align: center;
+    }
+
+    .nav-overview {
+      font-size: 48px;
+      margin: 20px 0 40px;
+      padding-left: 8%;
+      line-height: 1.8;
+    }
+
+    .nav-overview a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .nav-overview a:hover {
+      text-decoration: underline;
+    }
+
+    .audio-card {
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 20px auto;
+      width: 80%;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .audio-card h2 {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    .progress-container {
+      position: relative;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .progress-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid #ccc;
+    }
+
+    .button-group {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .img-switch-btn {
+      font-size: 36px;
+      padding: 10px 20px;
+      margin: 0 6px;
+      border: 2px solid #007bff;
+      background-color: white;
+      color: #007bff;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .img-switch-btn:hover {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .img-switch-btn.active {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .image-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .progress-bar-overlay {
+      position: absolute;
+      top: 0;
+      left: 9.65%;
+      height: 10px;
+      background-color: rgba(0, 128, 255, 0.3);
+      pointer-events: none;
+      transition: width 0.05s linear;
+      width: 0%;
+    }
+
+    .mir-title, .grounding-title {
+      text-align: left;
+      /* font-size: 2.2em; */
+      margin-bottom: 0.3em;
+      margin-top: 1.5em;
+      margin-left: 8%;
+      font-size: 60px; 
+      border-left: 10px solid #ed4314;
+      padding-left: 20px;
+    }
+
+    .grounding-subtitle {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-left: 8%;
+      margin-top: 1.2em;
+      font-size: 60px; 
+      border-left: 10px solid #ed4314;
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎵 FiLMu Demo</h1>
+
+<!-- 🔗 Overview Navigation -->
+<div class="nav-overview">
+  <strong>Overview:</strong><br>
+  FiLMu is a multimodal music-to-text model designed for segment-level music analysis. This demo focuses on two representative tasks: MIR and grounding.<br><br>
+
+  • <a href="#mir">MIR</a><br>
+  <span style="margin-left: 1em; display: block;">
+    FiLMu infers tempo, key, instruments, genre, and chords for a given segment (highlighted with solid red lines). Chord inference is particularly fine-grained — FiLMu can identify the specific chords and their timing.
+  </span><br>
+
+  • <a href="#grounding-query">Grounding (Query Based)</a><br>
+  <span style="margin-left: 1em; display: block;">
+    Without being given a segment, FiLMu can locate where a specific tempo or key (provided as a query) appears in the audio (marked with dashed red lines).
+  </span><br>
+
+  • <a href="#grounding-free">Grounding (Free Form)</a><br>
+  <span style="margin-left: 1em; display: block;">
+    Without any segment or query provided, FiLMu can still detect structural changes, such as shifts in tempo or key, across the audio.
+  </span>
+</div>
+
+<!-- MIR -->
+<h2 class="mir-title" id="mir">MIR</h2>
+
+<div class="audio-card">
+  <h2>Case 1</h2>
+  <audio id="audio1019" controls src="1019/1019_mix_29.08_47.08.wav"></audio>
+  <div class="button-group">
+    <button class="img-switch-btn active" onclick="switchImage('1019', 'chord', this)">Chord</button>
+    <button class="img-switch-btn" onclick="switchImage('1019', 'instruments', this)">Instruments</button>
+    <button class="img-switch-btn" onclick="switchImage('1019', 'key', this)">Key</button>
+    <button class="img-switch-btn" onclick="switchImage('1019', 'tempo', this)">Tempo</button>
+  </div>
+  <div class="progress-container">
+    <div class="image-wrapper">
+      <img id="img1019" src="1019/chord_with_spectrogram.png" class="progress-image">
+      <div class="progress-bar-overlay" id="bar1019"></div>
+    </div>
+  </div>
+</div>
+
+<div class="audio-card">
+  <h2>Case 2</h2>
+  <audio id="audio1595" controls src="1595/1595_mix_144.95_162.95.wav"></audio>
+  <div class="button-group">
+    <button class="img-switch-btn active" onclick="switchImage('1595', 'chord', this)">Chord</button>
+    <button class="img-switch-btn" onclick="switchImage('1595', 'instruments', this)">Instruments</button>
+    <button class="img-switch-btn" onclick="switchImage('1595', 'key', this)">Key</button>
+    <button class="img-switch-btn" onclick="switchImage('1595', 'tempo', this)">Tempo</button>
+  </div>
+  <div class="progress-container">
+    <div class="image-wrapper">
+      <img id="img1595" src="1595/chord_with_spectrogram.png" class="progress-image">
+      <div class="progress-bar-overlay" id="bar1595"></div>
+    </div>
+  </div>
+</div>
+
+<div class="audio-card">
+  <h2>Case 3</h2>
+  <audio id="audio003477" controls src="003477/003477.mp3_1.36_19.36.wav"></audio>
+  <div class="button-group">
+    <button class="img-switch-btn active" onclick="switchImage('003477', 'chord', this)">Chord</button>
+    <button class="img-switch-btn" onclick="switchImage('003477', 'genre', this)">Genre</button>
+    <button class="img-switch-btn" onclick="switchImage('003477', 'key', this)">Key</button>
+    <button class="img-switch-btn" onclick="switchImage('003477', 'tempo', this)">Tempo</button>
+  </div>
+  <div class="progress-container">
+    <div class="image-wrapper">
+      <img id="img003477" src="003477/chord_with_spectrogram.png" class="progress-image">
+      <div class="progress-bar-overlay" id="bar003477"></div>
+    </div>
+  </div>
+</div>
+
+<div class="audio-card">
+  <h2>Case 4</h2>
+  <audio id="audio989872" controls src="989872/989872.mp3_107.03_125.03.wav"></audio>
+  <div class="button-group">
+    <button class="img-switch-btn active" onclick="switchImage('989872', 'chord', this)">Chord</button>
+    <button class="img-switch-btn" onclick="switchImage('989872', 'genre', this)">Genre</button>
+    <button class="img-switch-btn" onclick="switchImage('989872', 'instruments', this)">Instruments</button>
+    <button class="img-switch-btn" onclick="switchImage('989872', 'key', this)">Key</button>
+    <button class="img-switch-btn" onclick="switchImage('989872', 'tempo', this)">Tempo</button>
+  </div>
+  <div class="progress-container">
+    <div class="image-wrapper">
+      <img id="img989872" src="989872/chord_with_spectrogram.png" class="progress-image">
+      <div class="progress-bar-overlay" id="bar989872"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Grounding -->
+<!-- <h2 class="grounding-title" id="grounding">Grounding</h2> -->
+
+<div class="grounding-subtitle" id="grounding-query">Grounding (Query Based)</div>
+
+<div class="audio-card">
+  <h2>Case 1</h2>
+  <audio id="audiogq_2106" controls src="gq_2106/audio.wav"></audio>
+  <div class="button-group">
+    <button class="img-switch-btn active" onclick="switchImage('gq_2106', 'Q1', this)">Q1</button>
+    <button class="img-switch-btn" onclick="switchImage('gq_2106', 'Q2', this)">Q2</button>
+    <button class="img-switch-btn" onclick="switchImage('gq_2106', 'Q3', this)">Q3</button>
+  </div>
+  <div class="progress-container">
+    <div class="image-wrapper">
+      <img id="imggq_2106" src="gq_2106/Q1_with_spectrogram.png" class="progress-image">
+      <div class="progress-bar-overlay" id="bargq_2106"></div>
+    </div>
+  </div>
+</div>
+
+<div class="audio-card">
+  <h2>Case 2</h2>
+  <audio id="audiogq_2990" controls src="gq_2990/audio.wav"></audio>
+  <div class="button-group">
+    <button class="img-switch-btn active" onclick="switchImage('gq_2990', 'Q1', this)">Q1</button>
+    <button class="img-switch-btn" onclick="switchImage('gq_2990', 'Q2', this)">Q2</button>
+    <button class="img-switch-btn" onclick="switchImage('gq_2990', 'Q3', this)">Q3</button>
+  </div>
+  <div class="progress-container">
+    <div class="image-wrapper">
+      <img id="imggq_2990" src="gq_2990/Q1_with_spectrogram.png" class="progress-image">
+      <div class="progress-bar-overlay" id="bargq_2990"></div>
+    </div>
+  </div>
+</div>
+
+<div class="grounding-subtitle" id="grounding-free">Grounding (Free Form)</div>
+
+<div class="audio-card">
+  <h2>Case 1</h2>
+  <audio id="audioq_1499" controls src="q_1499/audio.wav"></audio>
+  <div class="button-group">
+    <button class="img-switch-btn active" onclick="switchImage('q_1499', 'tempo', this)">Tempo</button>
+    <button class="img-switch-btn" onclick="switchImage('q_1499', 'key', this)">Key</button>
+  </div>
+  <div class="progress-container">
+    <div class="image-wrapper">
+      <img id="imgq_1499" src="q_1499/tempo_with_spectrogram.png" class="progress-image">
+      <div class="progress-bar-overlay" id="barq_1499"></div>
+    </div>
+  </div>
+</div>
+
+<div class="audio-card">
+  <h2>Case 2</h2>
+  <audio id="audioq_2933" controls src="q_2933/audio.wav"></audio>
+  <div class="button-group">
+    <button class="img-switch-btn active" onclick="switchImage('q_2933', 'tempo', this)">Tempo</button>
+    <button class="img-switch-btn" onclick="switchImage('q_2933', 'key', this)">Key</button>
+  </div>
+  <div class="progress-container">
+    <div class="image-wrapper">
+      <img id="imgq_2933" src="q_2933/tempo_with_spectrogram.png" class="progress-image">
+      <div class="progress-bar-overlay" id="barq_2933"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const audioIds = [
+    '1019', '1595', '003477', '989872',
+    'gq_2106', 'gq_2990', 'q_1499', 'q_2933'
+  ];
+
+  audioIds.forEach(id => {
+    const audio = document.getElementById('audio' + id);
+    const bar = document.getElementById('bar' + id);
+    if (audio && bar) {
+      audio.addEventListener("timeupdate", () => {
+        if (!isNaN(audio.duration)) {
+          const percentage = (audio.currentTime / audio.duration) * 100;
+          const adjustedPercentage = percentage * 0.884;
+          bar.style.width = `${adjustedPercentage}%`;
+        }
+      });
+    }
+  });
+
+  function switchImage(audioId, type, btn) {
+    const img = document.getElementById("img" + audioId);
+    if (img) img.src = `${audioId}/${type}_with_spectrogram.png`;
+    const group = btn.parentElement;
+    group.querySelectorAll(".img-switch-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  }
+</script>
+
+</body>
+</html>
